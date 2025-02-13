@@ -1,4 +1,4 @@
-import Counter from "./components/counter";
+import Counter from "../components/counter";
 
 export default async function Home() {
   const dataFetch = await fetch("https://jsonplaceholder.typicode.com/posts");
