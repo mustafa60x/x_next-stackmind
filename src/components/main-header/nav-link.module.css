@@ -1,0 +1,21 @@
+.link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.link:hover,
+.link:active {
+  background: linear-gradient(90deg, #ffc107 0%, #ffc107 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 18px rgba(248, 190, 42, 0.8);
+}
+
+.active {
+  background: linear-gradient(90deg, #ffc107 0%, #ffc107 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 18px rgba(248, 190, 42, 0.8);
+}

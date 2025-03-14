@@ -5,7 +5,7 @@ export default async function Home() {
   const data = await dataFetch.json() as { title: string }[];
 
   return (
-    <div className="flex items-center justify-center min-h-screen font-[family-name:var(--font-geist-sans)]">
+    <div className="flex items-center justify-center font-[family-name:var(--font-geist-sans)]">
       <div>
         <h1>Merhaba</h1>
 
