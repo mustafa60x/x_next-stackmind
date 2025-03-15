@@ -1,6 +1,7 @@
 import { useUserStore } from '../store/userStore';
-import { fetchUser } from '../services/userService';
 import { useCallback } from 'react';
+import { User } from '../types/userTypes';
+import { userRepository } from '@/lib/api/userRepository';
 
 export const useUser = () => {
   const currentUser = useUserStore((state) => state.currentUser);
@@ -8,7 +9,7 @@ export const useUser = () => {
 
   const loadUser = useCallback(async (userId: string) => {
     try {
-      const user = await fetchUser(userId);
+      const user = await userRepository.fetchUser(userId) as User;
       setCurrentUser(user);
     } catch (error) {
       console.error(error);
