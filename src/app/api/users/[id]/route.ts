@@ -1,12 +1,12 @@
 // /api/users/[id]
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // params'ı await ediyoruz, next.js uyarısı almamak için
-  const { id } = await Promise.resolve(context.params);
+  const { id } = await Promise.resolve(params);
 
   // Örnek kullanıcı objesi
   const user = {
