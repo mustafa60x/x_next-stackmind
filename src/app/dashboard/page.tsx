@@ -3,11 +3,12 @@ import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores';
 import { useRouter } from 'next/navigation';
 import { postRepository } from '@/lib/api/postRepository';
+import { Post, Comment } from '@/types';
 
 export default function Dashboard() {
   const { user, token, logout } = useAuthStore();
   const router = useRouter();
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [comment, setComment] = useState('');
@@ -19,7 +20,7 @@ export default function Dashboard() {
     }
 
     const fetchPosts = async () => {
-      const data = await postRepository.getPosts() as any[];
+      const data = await postRepository.getPosts() as Post[];
       setPosts(data);
     };
     fetchPosts();
@@ -28,7 +29,7 @@ export default function Dashboard() {
   const handlePostSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
-    const newPost = await postRepository.createPost(token, title, content);
+    const newPost = await postRepository.createPost(token, title, content) as Post;
     setPosts([newPost, ...posts]);
     setTitle('');
     setContent('');
@@ -36,8 +37,8 @@ export default function Dashboard() {
 
   const handleCommentSubmit = async (postId: string) => {
     if (!token) return;
-    const newComment = await postRepository.createComment(token, postId, comment);
-    setPosts(posts.map((p) => (p.id === postId ? { ...p, comments: [...(p.comments || []), newComment] } : p)));
+    const newComment = await postRepository.createComment(token, postId, comment) as Comment;
+    setPosts(posts.map((p) => (p.id === postId ? { ...p, comments: [...(p.comments || []), newComment] as Comment[] } : p)));
     setComment('');
   };
 

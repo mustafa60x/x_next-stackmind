@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/jwt';
 import { comments } from '@/lib/db';
+import { DecodedToken } from '@/types';
 
 export async function POST(request: Request) {
   const authHeader = request.headers.get('authorization');
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
   const newComment = {
     id: Date.now().toString(),
     content,
-    userId: (decoded as any).id,
+    userId: (decoded as DecodedToken).id,
     postId,
     score: 0,
     createdAt: new Date().toISOString(),

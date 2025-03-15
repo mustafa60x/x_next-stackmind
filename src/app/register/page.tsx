@@ -17,7 +17,7 @@ export default function Register() {
       const { token, user } = await authRepository.register(username, password);
       login(token, user);
       router.push('/dashboard');
-    } catch (err) {
+    } catch {
       setError('Kayıt başarısız!');
     }
   };

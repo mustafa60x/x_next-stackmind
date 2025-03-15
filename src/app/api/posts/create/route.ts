@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/jwt';
 import { posts } from '@/lib/db';
+import { DecodedToken } from '@/types';
 
 export async function POST(request: Request) {
   const authHeader = request.headers.get('authorization');
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
     id: Date.now().toString(),
     title,
     content,
-    userId: (decoded as any).id,
+    userId: (decoded as DecodedToken).id,
     createdAt: new Date().toISOString(),
   };
 

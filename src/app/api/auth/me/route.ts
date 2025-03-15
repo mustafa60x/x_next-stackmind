@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/jwt';
 import { users } from '@/lib/db';
+import { DecodedToken } from '@/types';
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
   }
 
-  const user = users.find((u) => u.id === (decoded as any).id);
+  const user = users.find((u) => u.id === (decoded as DecodedToken).id);
   if (!user) {
     return NextResponse.json({ message: 'User not found' }, { status: 404 });
   }

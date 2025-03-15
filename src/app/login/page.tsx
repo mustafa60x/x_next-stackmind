@@ -17,7 +17,7 @@ export default function Login() {
       const { token, user } = await authRepository.login(username, password);
       login(token, user);
       router.push('/dashboard');
-    } catch (err) {
+    } catch {
       setError('Giriş başarısız!');
     }
   };
