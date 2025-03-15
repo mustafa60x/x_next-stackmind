@@ -20,6 +20,12 @@ export class AuthRepository extends BaseRepository {
       }
     );
   }
+
+  async getProfile(token: string) {
+    return this.fetch<{ id: string; username: string }>('/api/auth/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
 }
 
 export const authRepository = new AuthRepository();
