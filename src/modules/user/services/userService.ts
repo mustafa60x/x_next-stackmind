@@ -1,6 +1,10 @@
 import { User } from '../types/userTypes';
-import { apiFetch } from '../../../lib/api';
+import { BaseRepository } from '@/lib/api/baseRepository';
 
-export async function fetchUser(userId: string): Promise<User> {
-  return await apiFetch(`/users/${userId}`);
+export class UserService extends BaseRepository {
+  async fetchUser(userId: string): Promise<User> {
+    return await this.fetch<User>(`/users/${userId}`);
+  }
 }
+
+export const userService = new UserService();

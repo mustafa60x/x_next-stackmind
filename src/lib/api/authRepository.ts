@@ -1,4 +1,4 @@
-import { BaseRepository } from '@/lib/api/baseRepository';
+import { BaseRepository } from './baseRepository';
 
 export class AuthRepository extends BaseRepository {
   async register(username: string, password: string) {
