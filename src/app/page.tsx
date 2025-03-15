@@ -17,7 +17,7 @@ export default function Home() {
   }, [isDarkMode]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white p-4">
+    <div className="h-full bg-white dark:bg-gray-900 text-black dark:text-white p-4">
       <h1 className="text-2xl font-bold">Hi, StackMind!</h1>
       <ThemeToggle />
     </div>
