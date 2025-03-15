@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores';
 import { useRouter } from 'next/navigation';
-import { postRepository } from '@/lib/api/postRepository';
+import { postRepository, commentRepository } from '@/lib/api';
 import { Post, Comment } from '@/types';
 
 export default function Dashboard() {
@@ -37,7 +37,7 @@ export default function Dashboard() {
 
   const handleCommentSubmit = async (postId: string) => {
     if (!token) return;
-    const newComment = await postRepository.createComment(token, postId, comment) as Comment;
+    const newComment = await commentRepository.createComment(token, postId, comment) as Comment;
     setPosts(posts.map((p) => (p.id === postId ? { ...p, comments: [...(p.comments || []), newComment] as Comment[] } : p)));
     setComment('');
   };
