@@ -1,6 +1,6 @@
 'use client';
 import ThemeToggle from '../components/ThemeToggle';
-import { useThemeStore } from "../store/main";
+import { useThemeStore } from "../stores";
 import { useEffect } from "react";
 
 export default function Home() {

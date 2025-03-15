@@ -1,4 +1,4 @@
-import { useThemeStore } from '../store/main';
+import { useThemeStore } from '../stores';
 
 export default function ThemeToggle() {
   const { isDarkMode, toggleDarkMode } = useThemeStore();
