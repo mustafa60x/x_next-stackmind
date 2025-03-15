@@ -9,6 +9,7 @@ export default function MainHeader() {
             <div className="flex space-x-4">
                 <NavLink href="/about">About</NavLink>
                 <NavLink href="/settings">Settings</NavLink>
+                <NavLink href="/profile">Profile</NavLink>
             </div>
         </nav>
     );
