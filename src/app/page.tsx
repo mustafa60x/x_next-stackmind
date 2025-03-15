@@ -1,23 +1,25 @@
-import Counter from "../components/counter";
+'use client';
+import ThemeToggle from '../components/ThemeToggle';
+import { useThemeStore } from "../store/main";
+import { useEffect } from "react";
 
-export default async function Home() {
-  const dataFetch = await fetch("https://jsonplaceholder.typicode.com/posts");
-  const data = await dataFetch.json() as { title: string }[];
+export default function Home() {
+  /* const dataFetch = await fetch("https://jsonplaceholder.typicode.com/posts");
+  const data = await dataFetch.json() as { title: string }[]; */
+  const { isDarkMode } = useThemeStore();
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
 
   return (
-    <div className="flex items-center justify-center font-[family-name:var(--font-geist-sans)]">
-      <div>
-        <h1>Merhaba</h1>
-
-        <Counter />
-
-
-        <div className="mt-4">
-          {data.map((item, index) => (
-            <p key={index}>{item.title}</p>
-          ))}
-        </div>
-      </div>
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white p-4">
+      <h1 className="text-2xl font-bold">Hi, StackMind!</h1>
+      <ThemeToggle />
     </div>
   );
 }
