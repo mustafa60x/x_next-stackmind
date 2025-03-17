@@ -17,12 +17,13 @@ export class AuthRepository extends BaseRepository {
     );
   }
 
-  async login(username: string, password: string) {
+  async login(username: string, password: string, csrfToken: string) {
     return this.fetch<{ token: string; user: { id: string; username: string } }>(
       `${this.RESOURCE}/login`,
       {
         method: 'POST',
-        body: JSON.stringify({ username, password }),
+        credentials: 'include', // Cookie’leri dahil et
+        body: JSON.stringify({ username, password, csrfToken }),
       }
     );
   }

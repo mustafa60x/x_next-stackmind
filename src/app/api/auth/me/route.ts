@@ -1,8 +1,8 @@
 // app/api/profile/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/jwt';
-import { users } from '@/lib/db';
 import { DecodedToken } from '@/types';
+import { supabase } from '@/lib/supabase';
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
@@ -20,8 +20,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
   }
 
-  const user = users.find((u) => u.id === (decoded as DecodedToken).id);
-  if (!user) {
+  const { data: user, error } = await supabase
+    .from('users')
+    .select('id, username')
+    .eq('id', (decoded as DecodedToken).id)
+    .single();
+
+  if (!user || error) {
     return NextResponse.json({ message: 'User not found' }, { status: 404 });
   }
 

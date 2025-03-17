@@ -1,8 +1,8 @@
 // app/api/comments/route.ts
 import { NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/jwt';
-import { comments } from '@/lib/db';
 import { DecodedToken } from '@/types';
+import { supabase } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   const authHeader = request.headers.get('authorization');
@@ -25,16 +25,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Missing fields' }, { status: 400 });
   }
 
-  const newComment = {
-    id: Date.now().toString(),
-    content,
-    userId: (decoded as DecodedToken).id,
-    postId,
-    score: 0,
-    createdAt: new Date().toISOString(),
-  };
+  const { data, error } = await supabase
+    .from('comments')
+    .insert([
+      {
+        content,
+        user_id: (decoded as DecodedToken).id,
+        post_id: postId,
+        // score: 0,
+      },
+    ])
+    .select()
+    .single();
 
-  comments.push(newComment);
+  if (error) {
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  }
 
-  return NextResponse.json(newComment, { status: 201 });
+  return NextResponse.json(data, { status: 201 });
 }

@@ -1,16 +1,41 @@
 // app/api/login/route.ts
-import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import { users } from '@/lib/db';
-import { generateToken } from '@/lib/jwt';
+import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import { generateToken } from "@/lib/jwt";
+import { validateCsrfToken, clearCsrfToken } from "@/lib/csrf";
+import { NextRequest } from "next/server";
+import { supabase } from "@/lib/supabase";
 
-export async function POST(req: Request) {
-  const { username, password } = await req.json();
+export async function POST(request: NextRequest) {
+  const { username, password, csrfToken } = await request.json();
 
-  const user = users.find((u) => u.username === username);
-  if (!user) {
+  // Cookie üzerinden tempUserId çekimi
+  const tempUserId = request.cookies.get("tempUserId")?.value;
+  if (!tempUserId || !csrfToken) {
     return NextResponse.json(
-      { message: 'Invalid credentials', users },
+      { message: "CSRF token or user ID missing" },
+      { status: 403 }
+    );
+  }
+
+  // CSRF token doğrulaması
+  if (!validateCsrfToken(tempUserId, csrfToken)) {
+    return NextResponse.json(
+      { message: "Invalid CSRF token" },
+      { status: 403 }
+    );
+  }
+
+  // Kullanıcı kontrolü
+  const { data: user, error } = await supabase
+    .from("users")
+    .select("id, username, password")
+    .eq("username", username)
+    .single();
+
+  if (!user || error) {
+    return NextResponse.json(
+      { message: "Invalid credentials" },
       { status: 401 }
     );
   }
@@ -18,14 +43,24 @@ export async function POST(req: Request) {
   const isValid = await bcrypt.compare(password, user.password);
   if (!isValid) {
     return NextResponse.json(
-      { message: 'Invalid credentials' },
+      { message: "Invalid credentials" },
       { status: 401 }
     );
   }
 
+  // Token oluşturma ve CSRF token'ı temizleme (tek kullanımlık)
   const token = generateToken(user);
-  return NextResponse.json(
+  clearCsrfToken(tempUserId);
+
+  const response = NextResponse.json(
     { token, user: { id: user.id, username } },
     { status: 200 }
   );
+
+  response.cookies.set("tempUserId", user.id.toString(), {
+    path: "/",
+    httpOnly: true,
+  });
+
+  return response;
 }

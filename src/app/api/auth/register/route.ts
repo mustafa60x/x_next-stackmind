@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { generateToken } from "@/lib/jwt";
 import { users } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 // Kullanıcı verilerinin saklanacağı örnek dizin
 // let users: Array<{ id: string; username: string; password: string }> = [];
@@ -24,16 +25,26 @@ export async function POST(req: Request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = {
-      id: Date.now().toString(),
-      username,
-      password: hashedPassword,
-    };
-    users.push(newUser);
 
-    const token = generateToken(newUser);
+    const { data, error } = await supabase
+      .from('users')
+      .insert([
+        {
+          username,
+          email: username,
+          password: hashedPassword,
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json({ message: error.message }, { status: 500 });
+    }
+
+    const token = generateToken(data);
     return NextResponse.json(
-      { token, user: { id: newUser.id, username } },
+      { token, user: { id: data.id, username } },
       { status: 201 }
     );
   } catch (error) {

@@ -2,7 +2,8 @@
 import { NextResponse } from 'next/server';
 import sanitizeHtml from 'sanitize-html';
 import { verifyToken } from '@/lib/jwt';
-import { posts } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
+import { DecodedToken } from '@/types';
 
 export async function POST(request: Request) {
   const authHeader = request.headers.get('authorization');
@@ -27,16 +28,21 @@ export async function POST(request: Request) {
   const sanitizedTitle = sanitizeHtml(title);
   const sanitizedContent = sanitizeHtml(content);
 
-  // Yeni post oluşturma
-  const newPost = {
-    id: Date.now().toString(),
-    title: sanitizedTitle,
-    content: sanitizedContent,
-    userId: (decoded as any).id,
-    createdAt: new Date().toISOString(),
-  };
+  const { data, error } = await supabase
+    .from('posts')
+    .insert([
+      {
+        title: sanitizedTitle,
+        content: sanitizedContent,
+        user_id: (decoded as DecodedToken).id,
+      },
+    ])
+    .select()
+    .single();
 
-  posts.push(newPost);
+  if (error) {
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  }
 
-  return NextResponse.json(newPost, { status: 201 });
+  return NextResponse.json(data, { status: 201 });
 }

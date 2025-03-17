@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { authRepository } from '@/lib/api/authRepository';
 import { useAuthStore } from '@/stores';
 import { useRouter } from 'next/navigation';
@@ -8,13 +8,26 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [csrfToken, setCsrfToken] = useState('');
   const { login } = useAuthStore();
   const router = useRouter();
 
+  useEffect(() => {
+    // CSRF token’ı server’dan al
+    fetch('/api/csrf', { credentials: 'include' }) // Cookie’leri dahil et
+      .then((res) => res.json())
+      .then((data) => setCsrfToken(data.csrfToken))
+      .catch((err) => console.error('CSRF token alınamadı:', err));
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!csrfToken) {
+      setError('CSRF token yüklenemedi, lütfen sayfayı yenileyin.');
+      return;
+    }
     try {
-      const { token, user } = await authRepository.login(username, password);
+      const { token, user } = await authRepository.login(username, password, csrfToken);
       login(token, user);
       router.push('/dashboard');
     } catch {
@@ -40,11 +53,9 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)}
           className="mb-4 p-2 w-full rounded text-black dark:text-white bg-white dark:bg-gray-700"
         />
+        <input type="hidden" name="csrfToken" value={csrfToken} />
         {error && <p className="text-red-500 mb-4">{error}</p>}
-        <button
-          type="submit"
-          className="p-2 bg-blue-500 text-white rounded w-full"
-        >
+        <button type="submit" className="p-2 bg-blue-500 text-white rounded w-full">
           Giriş Yap
         </button>
       </form>
