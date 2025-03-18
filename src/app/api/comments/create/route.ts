@@ -1,24 +1,10 @@
 // app/api/comments/route.ts
 import { NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/jwt';
 import { DecodedToken } from '@/types';
 import { supabase } from '@/lib/supabase';
 
 export async function POST(request: Request) {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader) {
-    return NextResponse.json({ message: 'No token provided' }, { status: 401 });
-  }
-  
-  const token = authHeader.split(' ')[1];
-  if (!token) {
-    return NextResponse.json({ message: 'No token provided' }, { status: 401 });
-  }
-
-  const decoded = verifyToken(token);
-  if (!decoded) {
-    return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
-  }
+  const decodedToken = (request as any).decodedToken;
 
   const { content, postId } = await request.json();
   if (!content || !postId) {
@@ -30,7 +16,7 @@ export async function POST(request: Request) {
     .insert([
       {
         content,
-        user_id: (decoded as DecodedToken).id,
+        user_id: (decodedToken as DecodedToken).id,
         post_id: postId,
         // score: 0,
       },

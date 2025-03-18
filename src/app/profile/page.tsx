@@ -1,28 +1,19 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores';
-import { useRouter } from 'next/navigation';
 import { authRepository } from '@/lib/api/authRepository';
 
 export default function Profile() {
   const { user, token, logout, isHydrated } = useAuthStore();
-  const router = useRouter();
   const [profile, setProfile] = useState<{ id: string; username: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Rehydration
     if (!isHydrated) return;
-
-    // Eğer token null ise (yani oturum açılmamışsa) login sayfasına yönlendir.
-    if (!token) {
-      router.push('/login');
-      return;
-    }
 
     const fetchProfile = async () => {
       try {
-        const data = await authRepository.getProfile(token);
+        const data = await authRepository.getProfile(token!);
         setProfile(data);
       } catch (err) {
         console.error('Profil yüklenemedi:', err);
@@ -32,11 +23,11 @@ export default function Profile() {
     };
 
     fetchProfile();
-  }, [isHydrated, token, router]);
+  }, [isHydrated, token]);
 
-  if (!isHydrated) return <div className="min-h-screen bg-white dark:bg-gray-900 p-4">Yükleniyor...</div>;
-  if (!user) return null;
-  if (loading) return <div className="min-h-screen bg-white dark:bg-gray-900 p-4">Yükleniyor...</div>;
+  if (!isHydrated || loading) {
+    return <div className="min-h-screen bg-white dark:bg-gray-900 p-4">Yükleniyor...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 p-4">

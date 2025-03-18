@@ -2,12 +2,28 @@ import { useAuthStore } from "@/stores";
 
 export class BaseRepository {
   protected async fetch<T>(url: string, options?: RequestInit): Promise<T> {
+    const token = useAuthStore.getState().token;
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json"
+    };
+
+    // Copy existing headers if any
+    if (options?.headers) {
+      Object.entries(options.headers).forEach(([key, value]) => {
+        if (typeof value === 'string') {
+          headers[key] = value;
+        }
+      });
+    }
+
+    // Automatically add token if exists
+    if (token && !headers["Authorization"]) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
       ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...(options?.headers || {}),
-      },
+      headers,
     });
 
     if (response.ok) {
