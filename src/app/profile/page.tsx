@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores';
 import { authRepository } from '@/lib/api/authRepository';
-import { useRouter } from 'next/navigation';
 
 export default function Profile() {
   const { logout } = useAuthStore();

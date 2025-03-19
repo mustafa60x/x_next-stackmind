@@ -29,6 +29,7 @@ export const useAuthStore = create(
       logout: async () => {
         Cookies.remove('access_token')
         set({ user: null });
+        window.location.href = '/login';
       },
     }),
     {
