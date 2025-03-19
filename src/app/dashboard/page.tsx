@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import Link from 'next/link';
 
 export default function Dashboard() {
   const { user, logout } = useAuthStore();
@@ -175,7 +176,12 @@ export default function Dashboard() {
                       </p>
                     </div>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{post.title}</h3>
+                  <Link 
+                    href={`/posts/${post.id}`}
+                    className="block hover:text-blue-500 transition-colors"
+                  >
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{post.title}</h3>
+                  </Link>
                   <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{post.content}</p>
 
                   {/* Comments Section */}

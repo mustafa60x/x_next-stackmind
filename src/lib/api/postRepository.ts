@@ -14,6 +14,10 @@ export class PostRepository extends BaseRepository {
     return this.fetch(`${this.RESOURCE}`);
   }
 
+  async getPost(id: string) {
+    return this.fetch(`${this.RESOURCE}/${id}`);
+  }
+
   async createComment(postId: string, content: string) {
     return this.fetch(`${this.RESOURCE}/create`, {
       method: 'POST',

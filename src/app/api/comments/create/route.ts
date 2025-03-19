@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       {
         content,
         user_id: (decodedToken as DecodedToken).id,
-        post_id: postId,
+        post_id: Number(postId),
         // score: 0,
       },
     ])
