@@ -4,99 +4,224 @@ import { useAuthStore } from '@/stores';
 import { postRepository, commentRepository } from '@/lib/api';
 import { Post, Comment } from '@/types';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { format } from 'date-fns';
+import { tr } from 'date-fns/locale';
 
 export default function Dashboard() {
   const { user, logout } = useAuthStore();
   const [posts, setPosts] = useState<Post[]>([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [comment, setComment] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [commentInputs, setCommentInputs] = useState<{ [key: string]: string }>({});
   const router = useRouter();
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const data = await postRepository.getPosts() as Post[];
-        setPosts(data);
-      } catch (error: any) {
-        console.error('Error fetching posts:', error);
-        if (error.response?.status === 401) {
-          logout();
-        }
-      }
-    };
     fetchPosts();
-  }, [router, logout]);
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      setIsLoading(true);
+      const data = await postRepository.getPosts() as Post[];
+      setPosts(data);
+    } catch (error: any) {
+      console.error('Error fetching posts:', error);
+      toast.error('Gönderiler yüklenirken bir hata oluştu');
+      if (error.response?.status === 401) {
+        logout();
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handlePostSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newPost = await postRepository.createPost(title, content) as Post;
-    setPosts([newPost, ...posts]);
-    setTitle('');
-    setContent('');
+    if (!title.trim() || !content.trim()) {
+      toast.error('Lütfen başlık ve içerik alanlarını doldurun');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const newPost = await postRepository.createPost(title, content) as Post;
+      setPosts([newPost, ...posts]);
+      setTitle('');
+      setContent('');
+      toast.success('Gönderi başarıyla oluşturuldu');
+    } catch (error) {
+      console.error('Error creating post:', error);
+      toast.error('Gönderi oluşturulurken bir hata oluştu');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleCommentSubmit = async (postId: string) => {
-    const newComment = await commentRepository.createComment(postId, comment) as Comment;
-    setPosts(posts.map((p) => (p.id === postId ? { ...p, comments: [...(p.comments || []), newComment] as Comment[] } : p)));
-    setComment('');
+  const handleCommentSubmit = async (postId: string, e: React.FormEvent) => {
+    e.preventDefault();
+    const commentText = commentInputs[postId];
+    if (!commentText?.trim()) {
+      toast.error('Lütfen bir yorum yazın');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const newComment = await commentRepository.createComment(postId, commentText) as Comment;
+      setPosts(posts.map((p) => {
+        if (p.id === postId) {
+          return {
+            ...p,
+            comments: [...(p.comments || []), newComment]
+          };
+        }
+        return p;
+      }));
+      setCommentInputs({ ...commentInputs, [postId]: '' });
+      toast.success('Yorum başarıyla eklendi');
+    } catch (error) {
+      console.error('Error creating comment:', error);
+      toast.error('Yorum eklenirken bir hata oluştu');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 p-4">
-      {/* <h1 className="text-2xl font-bold text-black dark:text-white">Hoş geldin, {user.username}!</h1> */}
-      <button
-        onClick={logout}
-        className="mt-4 p-2 bg-red-500 text-white rounded"
-      >
-        Çıkış Yap
-      </button>
-
-      <form onSubmit={handlePostSubmit} className="mt-6">
-        <input
-          type="text"
-          placeholder="Başlık"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="mb-4 p-2 w-full rounded text-black dark:text-white bg-white dark:bg-gray-700"
-        />
-        <textarea
-          placeholder="İçerik"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="mb-4 p-2 w-full rounded text-black dark:text-white bg-white dark:bg-gray-700"
-        />
-        <button type="submit" className="p-2 bg-blue-500 text-white rounded">
-          Gönder
-        </button>
-      </form>
-
-      <div className="mt-6">
-        {JSON.stringify(posts)}
-        {posts.map((post) => (
-          <div key={post.id} className="mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded">
-            <h2 className="text-xl font-bold text-black dark:text-white">{post.title}</h2>
-            <p className="text-black dark:text-white">{post.content}</p>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleCommentSubmit(post.id);
-              }}
-              className="mt-2"
-            >
-              <input
-                type="text"
-                placeholder="Yorum yaz"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="p-2 w-full rounded text-black dark:text-white bg-white dark:bg-gray-700"
-              />
-              <button type="submit" className="mt-2 p-2 bg-green-500 text-white rounded">
-                Yorum Yap
-              </button>
-            </form>
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      {/* Dashboard Header */}
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-5xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <div className="flex-shrink-0">
+              <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+                {user?.username?.[0]?.toUpperCase()}
+              </div>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{user?.username}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Toplam Gönderi: {posts.length}</p>
+            </div>
           </div>
-        ))}
+          <button
+            onClick={logout}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+          >
+            Çıkış Yap
+          </button>
+        </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        {/* Create Post Form */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Yeni Gönderi Oluştur</h3>
+          <form onSubmit={handlePostSubmit}>
+            <input
+              type="text"
+              placeholder="Başlık"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              disabled={isSubmitting}
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <textarea
+              placeholder="İçerik"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              disabled={isSubmitting}
+              rows={4}
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`w-full sm:w-auto px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {isSubmitting ? 'Gönderiliyor...' : 'Gönder'}
+            </button>
+          </form>
+        </div>
+
+        {/* Posts List */}
+        <div className="space-y-6">
+          {posts.length === 0 ? (
+            <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+              <p className="text-gray-500 dark:text-gray-400">Henüz hiç gönderi yok</p>
+            </div>
+          ) : (
+            posts.map((post) => (
+              <div key={post.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+                <div className="p-6">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold text-sm">
+                      {post.author?.[0]?.toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{post.author}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {post.createdAt && format(new Date(post.createdAt), 'dd MMMM yyyy HH:mm', { locale: tr })}
+                      </p>
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{post.title}</h3>
+                  <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{post.content}</p>
+
+                  {/* Comments Section */}
+                  <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Yorumlar ({post.comments?.length || 0})</h4>
+                    <div className="space-y-4 mb-4">
+                      {post.comments?.map((comment, index) => (
+                        <div key={index} className="flex space-x-3">
+                          <div className="h-6 w-6 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs">
+                            {comment.author?.[0]?.toUpperCase()}
+                          </div>
+                          <div className="flex-1">
+                            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-2">
+                              <p className="text-sm font-medium text-gray-900 dark:text-white">{comment.author}</p>
+                              <p className="text-sm text-gray-700 dark:text-gray-300">{comment.content}</p>
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              {comment.createdAt && format(new Date(comment.createdAt), 'dd MMMM yyyy HH:mm', { locale: tr })}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <form onSubmit={(e) => handleCommentSubmit(post.id, e)} className="flex space-x-2">
+                      <input
+                        type="text"
+                        placeholder="Yorum yaz..."
+                        value={commentInputs[post.id] || ''}
+                        onChange={(e) => setCommentInputs({ ...commentInputs, [post.id]: e.target.value })}
+                        disabled={isSubmitting}
+                        className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className={`px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {isSubmitting ? '...' : 'Gönder'}
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
