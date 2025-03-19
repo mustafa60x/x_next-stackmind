@@ -161,15 +161,15 @@ export default function Dashboard() {
               <p className="text-gray-500 dark:text-gray-400">Henüz hiç gönderi yok</p>
             </div>
           ) : (
-            posts.map((post) => (
+            posts.map((post: Post) => (
               <div key={post.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
                 <div className="p-6">
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold text-sm">
-                      {post.author?.[0]?.toUpperCase()}
+                      {post.user?.username?.[0]?.toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">{post.author}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{post.user?.username}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
                         {post.createdAt && format(new Date(post.createdAt), 'dd MMMM yyyy HH:mm', { locale: tr })}
                       </p>
@@ -182,14 +182,14 @@ export default function Dashboard() {
                   <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                     <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Yorumlar ({post.comments?.length || 0})</h4>
                     <div className="space-y-4 mb-4">
-                      {post.comments?.map((comment, index) => (
+                      {post?.comments?.map((comment: Comment, index) => (
                         <div key={index} className="flex space-x-3">
                           <div className="h-6 w-6 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs">
-                            {comment.author?.[0]?.toUpperCase()}
+                            {comment.user?.username?.[0]?.toUpperCase()}
                           </div>
                           <div className="flex-1">
                             <div className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-2">
-                              <p className="text-sm font-medium text-gray-900 dark:text-white">{comment.author}</p>
+                              <p className="text-sm font-medium text-gray-900 dark:text-white">{comment.user?.username}</p>
                               <p className="text-sm text-gray-700 dark:text-gray-300">{comment.content}</p>
                             </div>
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
