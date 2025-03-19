@@ -2,7 +2,6 @@ import { useAuthStore } from "@/stores";
 
 export class BaseRepository {
   protected async fetch<T>(url: string, options?: RequestInit): Promise<T> {
-    const token = useAuthStore.getState().token;
     const headers: Record<string, string> = {
       "Content-Type": "application/json"
     };
@@ -14,11 +13,6 @@ export class BaseRepository {
           headers[key] = value;
         }
       });
-    }
-
-    // Automatically add token if exists
-    if (token && !headers["Authorization"]) {
-      headers["Authorization"] = `Bearer ${token}`;
     }
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
@@ -33,7 +27,7 @@ export class BaseRepository {
     // Error handling
     if (response?.status === 401) {
       // Unauthorized - Token'ı temizle
-      useAuthStore.setState({ token: null });
+      document.cookie = "access_token=; expires=Thu, 1 Jan 1970 00:00:00 UTC; path=/;";
       // Oturum açma sayfasına yönlendir
       window.location.href = "/login";
     }

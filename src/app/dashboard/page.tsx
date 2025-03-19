@@ -1,43 +1,34 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores';
-import { useRouter } from 'next/navigation';
 import { postRepository, commentRepository } from '@/lib/api';
 import { Post, Comment } from '@/types';
 
 export default function Dashboard() {
-  const { user, token, logout } = useAuthStore();
-  const router = useRouter();
+  const { user, logout } = useAuthStore();
   const [posts, setPosts] = useState<Post[]>([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [comment, setComment] = useState('');
 
   useEffect(() => {
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-
     const fetchPosts = async () => {
       const data = await postRepository.getPosts() as Post[];
       setPosts(data);
     };
     fetchPosts();
-  }, [token, router]);
+  }, []);
 
   const handlePostSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token) return;
-    const newPost = await postRepository.createPost(token, title, content) as Post;
+    const newPost = await postRepository.createPost(title, content) as Post;
     setPosts([newPost, ...posts]);
     setTitle('');
     setContent('');
   };
 
   const handleCommentSubmit = async (postId: string) => {
-    if (!token) return;
-    const newComment = await commentRepository.createComment(token, postId, comment) as Comment;
+    const newComment = await commentRepository.createComment(postId, comment) as Comment;
     setPosts(posts.map((p) => (p.id === postId ? { ...p, comments: [...(p.comments || []), newComment] as Comment[] } : p)));
     setComment('');
   };
@@ -74,6 +65,7 @@ export default function Dashboard() {
       </form>
 
       <div className="mt-6">
+        {JSON.stringify(posts)}
         {posts.map((post) => (
           <div key={post.id} className="mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded">
             <h2 className="text-xl font-bold text-black dark:text-white">{post.title}</h2>

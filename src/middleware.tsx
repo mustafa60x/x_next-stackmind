@@ -7,9 +7,10 @@ const protectedRoutes = ["/profile", "/dashboard"];
 // Public routes that don't require authentication
 const publicRoutes = ["/login", "/register"];
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const decodedData = getDecodedToken(request);
+  const token = request.cookies.get('access_token')?.value;
+  const decodedData = await getDecodedToken(token);
 
   // Check if the current path is a protected route
   const isProtectedRoute = protectedRoutes.some((route) =>
@@ -33,7 +34,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  (request as any).decodedToken = decodedData; // diger api route'larina token'ı iletme
   return NextResponse.next();
 }
 
@@ -50,27 +50,15 @@ export const config = {
   ],
 };
 
-function getDecodedToken(request: NextRequest) {
+async function getDecodedToken(token: string | undefined) {
   try {
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader) {
-      return NextResponse.json(
-        { message: "No token provided" },
-        { status: 401 }
-      );
-    }
-    const token = authHeader.split(" ")[1];
     if (!token) {
-      return NextResponse.json(
-        { message: "No token provided" },
-        { status: 401 }
-      );
+      return null;
     }
-    const decoded = verifyToken(token);
+    const decoded = await verifyToken(token);
     if (!decoded) {
-      return NextResponse.json({ message: "Invalid token" }, { status: 401 });
+      return null;
     }
-
     return decoded;
   } catch (error) {
     return null;

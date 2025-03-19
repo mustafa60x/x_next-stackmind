@@ -27,8 +27,8 @@ export default function Login() {
       return;
     }
     try {
-      const { token, user } = await authRepository.login(username, password, csrfToken);
-      login(token, user);
+      const { user } = await authRepository.login(username, password, csrfToken);
+      login(user);
       router.push('/dashboard');
     } catch {
       setError('Giriş başarısız!');

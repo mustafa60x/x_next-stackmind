@@ -49,18 +49,23 @@ export async function POST(request: NextRequest) {
   }
 
   // Token oluşturma ve CSRF token'ı temizleme (tek kullanımlık)
-  const token = generateToken(user);
+  const token = await generateToken(user);
   clearCsrfToken(tempUserId);
 
   const response = NextResponse.json(
-    { token, user: { id: user.id, username } },
+    { user: { id: user.id, username } },
     { status: 200 }
   );
 
-  response.cookies.set("tempUserId", user.id.toString(), {
-    path: "/",
+  // Auth token'ı cookie olarak ayarla
+  response.cookies.set("access_token", token, {
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 7 * 24 * 60 * 60, // 7 gün
   });
+
+  // Temporary user ID'yi temizle
+  response.cookies.delete("tempUserId");
 
   return response;
 }

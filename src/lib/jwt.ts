@@ -1,17 +1,26 @@
-import jwt from 'jsonwebtoken';
+import { SignJWT, jwtVerify } from 'jose'
 
-const SECRET = 'supersecretkey'; // Prod ortamda .env dosyasına konulacak!
+type DecodedToken = {
+  id: string;
+  username: string;
+};
 
 export function generateToken(user: { id: string; username: string }) {
-  return jwt.sign({ id: user.id, username: user.username }, SECRET, {
-    expiresIn: '1h',
-  });
+  const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+  return new SignJWT({ id: user.id, username: user.username })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('7d') // 7 days
+    .sign(secret);
 }
 
-export function verifyToken(token: string) {
+export async function verifyToken(token: string): Promise<DecodedToken | null> {
   try {
-    return jwt.verify(token, SECRET);
-  } catch {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+    const { payload } = await jwtVerify<DecodedToken>(token, secret);
+    return payload;
+  } catch (error) {
+    console.error('Token doğrulama hatası:', error);
     return null;
   }
 }

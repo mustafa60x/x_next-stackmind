@@ -28,12 +28,9 @@ export class AuthRepository extends BaseRepository {
     );
   }
 
-  async getProfile(token: string) {
+  async getProfile() {
     return this.fetch<{ id: string; username: string }>(
       `${this.RESOURCE}/me`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
     );
   }
 }

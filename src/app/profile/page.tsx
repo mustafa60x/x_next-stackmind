@@ -2,18 +2,17 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores';
 import { authRepository } from '@/lib/api/authRepository';
+import { useRouter } from 'next/navigation';
 
 export default function Profile() {
-  const { user, token, logout, isHydrated } = useAuthStore();
+  const { logout } = useAuthStore();
   const [profile, setProfile] = useState<{ id: string; username: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isHydrated) return;
-
     const fetchProfile = async () => {
       try {
-        const data = await authRepository.getProfile(token!);
+        const data = await authRepository.getProfile();
         setProfile(data);
       } catch (err) {
         console.error('Profil yüklenemedi:', err);
@@ -23,9 +22,9 @@ export default function Profile() {
     };
 
     fetchProfile();
-  }, [isHydrated, token]);
+  }, []);
 
-  if (!isHydrated || loading) {
+  if (loading) {
     return <div className="min-h-screen bg-white dark:bg-gray-900 p-4">Yükleniyor...</div>;
   }
 
