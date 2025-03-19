@@ -2,11 +2,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { generateToken } from "@/lib/jwt";
-import { users } from "@/lib/db";
 import { supabase } from "@/lib/supabase";
-
-// Kullanıcı verilerinin saklanacağı örnek dizin
-// let users: Array<{ id: string; username: string; password: string }> = [];
 
 export async function POST(req: Request) {
   try {
@@ -16,8 +12,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Eksik alanlar" }, { status: 400 });
     }
 
-    const existingUser = users.find((u) => u.username === username);
-    if (existingUser) {
+    const { data: existingUser, error: existingUserError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('username', username)
+      .maybeSingle();
+
+
+    if (existingUser || existingUserError) {
       return NextResponse.json(
         { message: "Kullanıcı zaten mevcut" },
         { status: 409 }
