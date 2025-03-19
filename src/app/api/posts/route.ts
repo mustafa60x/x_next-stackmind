@@ -6,7 +6,20 @@ import { supabase } from '@/lib/supabase';
 export async function GET() {
   const { data, error } = await supabase
     .from('posts')
-    .select('*, comments(*)')
+    .select(`
+      *,
+      user:users (
+        username,
+        id
+      ),
+      comments (
+        *,
+        user:users (
+          username,
+          id
+        )
+      )
+    `)
     .order('created_at', { ascending: false });
   if (error) {
     return NextResponse.json({ message: error.message }, { status: 500 });
