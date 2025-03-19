@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { verifyToken } from "./lib/jwt";
+import { cookies } from 'next/headers'
+
 
 // Protected routes that require authentication
 const protectedRoutes = ["/profile", "/dashboard"];
@@ -9,7 +11,7 @@ const publicRoutes = ["/login", "/register"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get('access_token')?.value;
+  const token = (await cookies()).get("access_token")?.value;
   const decodedData = await getDecodedToken(token);
 
   // Check if the current path is a protected route

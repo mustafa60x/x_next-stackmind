@@ -1,5 +1,4 @@
-import { useAuthStore } from "@/stores";
-
+import Cookies from 'js-cookie'
 export class BaseRepository {
   protected async fetch<T>(url: string, options?: RequestInit): Promise<T> {
     const headers: Record<string, string> = {
@@ -27,7 +26,7 @@ export class BaseRepository {
     // Error handling
     if (response?.status === 401) {
       // Unauthorized - Token'ı temizle
-      document.cookie = "access_token=; expires=Thu, 1 Jan 1970 00:00:00 UTC; path=/;";
+      Cookies.remove('access_token');
       // Oturum açma sayfasına yönlendir
       window.location.href = "/login";
     }

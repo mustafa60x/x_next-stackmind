@@ -5,12 +5,13 @@ import { generateToken } from "@/lib/jwt";
 import { validateCsrfToken, clearCsrfToken } from "@/lib/csrf";
 import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   const { username, password, csrfToken } = await request.json();
 
   // Cookie üzerinden tempUserId çekimi
-  const tempUserId = request.cookies.get("tempUserId")?.value;
+  const tempUserId = (await cookies()).get("tempUserId")?.value;
   if (!tempUserId || !csrfToken) {
     return NextResponse.json(
       { message: "CSRF token or user ID missing" },
@@ -53,19 +54,28 @@ export async function POST(request: NextRequest) {
   clearCsrfToken(tempUserId);
 
   const response = NextResponse.json(
-    { user: { id: user.id, username } },
+    { token, user: { id: user.id, username } },
     { status: 200 }
   );
 
   // Auth token'ı cookie olarak ayarla
-  response.cookies.set("access_token", token, {
+  /* response.cookies.set("access_token", token, {
+    path: "/",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 7 * 24 * 60 * 60, // 7 gün
-  });
+  }); */
+
+  /* const cookieStore = await cookies();
+  cookieStore.set("access_token", token, {
+    path: "/",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 7 * 24 * 60 * 60, // 7 gün
+  }); */
 
   // Temporary user ID'yi temizle
-  response.cookies.delete("tempUserId");
+  // (await cookies()).delete('tempUserId')
 
   return response;
 }

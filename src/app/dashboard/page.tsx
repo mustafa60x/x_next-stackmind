@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores';
 import { postRepository, commentRepository } from '@/lib/api';
 import { Post, Comment } from '@/types';
+import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
   const { user, logout } = useAuthStore();
@@ -10,14 +11,22 @@ export default function Dashboard() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [comment, setComment] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const data = await postRepository.getPosts() as Post[];
-      setPosts(data);
+      try {
+        const data = await postRepository.getPosts() as Post[];
+        setPosts(data);
+      } catch (error: any) {
+        console.error('Error fetching posts:', error);
+        if (error.response?.status === 401) {
+          logout();
+        }
+      }
     };
     fetchPosts();
-  }, []);
+  }, [router, logout]);
 
   const handlePostSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,13 +42,17 @@ export default function Dashboard() {
     setComment('');
   };
 
-  if (!user) return null;
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
+
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 p-4">
-      <h1 className="text-2xl font-bold text-black dark:text-white">Hoş geldin, {user.username}!</h1>
+      {/* <h1 className="text-2xl font-bold text-black dark:text-white">Hoş geldin, {user.username}!</h1> */}
       <button
-        onClick={logout}
+        onClick={handleLogout}
         className="mt-4 p-2 bg-red-500 text-white rounded"
       >
         Çıkış Yap

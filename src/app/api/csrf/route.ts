@@ -2,11 +2,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateCsrfToken } from '@/lib/csrf';
 import crypto from 'crypto';
+import { cookies } from 'next/headers'
 
 export async function GET(request: NextRequest) {
   // Cookie üzerinden tempUserId alınır; yoksa rastgele oluşturulur
   const tempUserId =
-    request.cookies.get('tempUserId')?.value ||
+    (await cookies()).get('tempUserId')?.value ||
     crypto.randomInt(0, 2147483647).toString();
 
   // CSRF token'ı tempUserId kullanılarak oluşturulur
@@ -14,7 +15,8 @@ export async function GET(request: NextRequest) {
 
   // Yanıt oluşturulurken cookie set edilir
   const response = NextResponse.json({ csrfToken }, { status: 200 });
-  response.cookies.set('tempUserId', tempUserId, {
+  const cookieStore = await cookies();
+  cookieStore.set('tempUserId', tempUserId, {
     path: '/',
     httpOnly: true,
   });
