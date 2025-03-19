@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
 
-    const token = generateToken(data);
+    const token = await generateToken(data);
     return NextResponse.json(
       { token, user: { id: data.id, username } },
       { status: 201 }

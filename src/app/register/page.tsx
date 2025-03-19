@@ -14,8 +14,8 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { user } = await authRepository.register(username, password);
-      login(user);
+      const { token, user } = await authRepository.register(username, password);
+      login(token, user);
       router.push('/dashboard');
     } catch {
       setError('Kayıt başarısız!');
