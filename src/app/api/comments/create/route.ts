@@ -2,9 +2,19 @@
 import { NextResponse } from 'next/server';
 import { DecodedToken } from '@/types';
 import { supabase } from '@/lib/supabase';
+import { cookies } from 'next/headers'
+import { verifyToken } from '@/lib/jwt';
 
 export async function POST(request: Request) {
-  const decodedToken = (request as any).decodedToken;
+  const accessToken = (await cookies()).get('access_token')?.value;
+  if (!accessToken) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
+
+  const decodedToken = await verifyToken(accessToken);
+  if (!decodedToken) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
 
   const { content, postId } = await request.json();
   if (!content || !postId) {
