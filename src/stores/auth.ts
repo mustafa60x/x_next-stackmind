@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import Cookies from "js-cookie";
 
 type User = {
@@ -20,8 +19,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: async (token: string, user: User) => {
     set({ user });
     Cookies.set("access_token", token, {
-      path: "",
+      path: "/",
       expires: 7, // 7 days
+      sameSite: "strict"
     });
   },
   logout: async () => {

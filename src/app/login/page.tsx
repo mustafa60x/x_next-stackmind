@@ -32,7 +32,13 @@ export default function Login() {
     const loadingToast = toast.loading('Giriş yapılıyor...');
     try {
       const { token, user } = await authRepository.login(username, password, csrfToken);
-      login(token, user);
+      
+      // Login işlemini gerçekleştir ve cookie'nin kaydedilmesini bekle
+      await login(token, user);
+      
+      // Cookie'nin kaydedilmesi için biraz daha uzun bir süre bekleyelim
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       toast.success('Başarıyla giriş yapıldı!', { id: loadingToast });
       router.push('/dashboard');
     } catch (error) {
