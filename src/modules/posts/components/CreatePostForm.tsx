@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { Button, Input, Textarea } from "@/modules/common/components/ui";
 
 interface CreatePostFormProps {
   onSubmit: (title: string, content: string) => Promise<void>;
@@ -38,34 +39,36 @@ export const CreatePostForm = ({
         Yeni Gönderi Oluştur
       </h3>
 
-      <form onSubmit={handleSubmit}>
-        <input
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          label="Başlık"
           type="text"
-          placeholder="Başlık"
+          placeholder="Gönderi başlığını girin"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           disabled={isSubmitting}
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          fullWidth
         />
 
-        <textarea
-          placeholder="İçerik"
+        <Textarea
+          label="İçerik"
+          placeholder="Gönderi içeriğini girin"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           disabled={isSubmitting}
           rows={4}
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          fullWidth
         />
 
-        <button
+        <Button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full sm:w-auto px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors ${
-            isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          isLoading={isSubmitting}
+          fullWidth
+          className="sm:w-auto"
         >
-          {isSubmitting ? "Gönderiliyor..." : "Gönder"}
-        </button>
+          Gönder
+        </Button>
       </form>
     </div>
   );

@@ -1,7 +1,10 @@
 "use client";
 
+import { clsx } from 'clsx';
+
 interface LoadingSpinnerProps {
   size?: "sm" | "md" | "lg";
+  className?: string;
 }
 
 const sizeClasses = {
@@ -10,10 +13,14 @@ const sizeClasses = {
   lg: "h-12 w-12 border-[3px]",
 };
 
-export const LoadingSpinner = ({ size = "md" }: LoadingSpinnerProps) => {
+export const LoadingSpinner = ({ size = "md", className }: LoadingSpinnerProps) => {
   return (
     <div
-      className={`animate-spin rounded-full border-t-blue-500 border-b-blue-500 border-l-transparent border-r-transparent ${sizeClasses[size]}`}
+      className={clsx(
+        'animate-spin rounded-full border-t-blue-500 border-b-blue-500 border-l-transparent border-r-transparent',
+        sizeClasses[size],
+        className
+      )}
     />
   );
 };

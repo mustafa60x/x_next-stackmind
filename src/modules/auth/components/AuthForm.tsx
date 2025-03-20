@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { LoadingSpinner } from "@/modules/common/components/LoadingSpinner";
 import Link from "next/link";
+import { Button, Input } from "@/modules/common/components/ui";
 
 interface AuthFormProps {
   mode: "login" | "register";
@@ -49,30 +50,24 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
         </div>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Kullanıcı Adı
-            </label>
-            <input
+            <Input
+              label="Kullanıcı Adı"
               type="text"
               autoComplete="username"
               placeholder="Kullanıcı adınızı giriniz"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition duration-150"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Şifre
-            </label>
-            <input
+            <Input
+              label="Şifre"
               type="password"
               autoComplete="current-password"
               placeholder="Şifrenizi giriniz (en az 6 karakter)"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition duration-150"
               required
               minLength={6}
             />
@@ -85,21 +80,17 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
         )}
 
         <div>
-          <button
+          <Button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full flex justify-center mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 transition duration-150 ${
-              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            fullWidth
+            isLoading={isSubmitting}
+            variant={"primary"}
+            size="lg"
+            className="mt-6"
           >
-            {isSubmitting ? (
-              <LoadingSpinner size="sm" />
-            ) : mode === "login" ? (
-              "Giriş Yap"
-            ) : (
-              "Kayıt Ol"
-            )}
-          </button>
+            {mode === "login" ? "Giriş Yap" : "Kayıt Ol"}
+          </Button>
 
           {mode === "login" ? (
             <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
