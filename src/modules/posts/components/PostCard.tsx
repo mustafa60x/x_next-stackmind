@@ -6,6 +6,7 @@ import { tr } from 'date-fns/locale';
 import Link from 'next/link';
 import { CommentSection } from './CommentSection';
 import { UserAvatar } from '@/modules/user/components/UserAvatar';
+import { useEffect, useRef, useState } from 'react';
 
 interface PostCardProps {
   post: Post;
@@ -14,8 +15,43 @@ interface PostCardProps {
 }
 
 export const PostCard = ({ post, showFullContent = false, onCommentSubmit }: PostCardProps) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Card ekranda gorunuyor..
+          setIsVisible(true);
+          observer.unobserve(entry.target);
+        }
+      },
+      {
+        threshold: 0.1 // 0 ile 1 arasında bir değer, 0.1 demek %10'ını görürken tetiklenir.
+      }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => {
+      if (cardRef.current) {
+        observer.unobserve(cardRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+    <div 
+      ref={cardRef}
+      className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden transition-all duration-700 transform ${
+        isVisible 
+          ? 'opacity-100 translate-y-0' 
+          : 'opacity-0 translate-y-10'
+      }`}
+    >
       <div className="p-6">
         <div className="flex items-center space-x-3 mb-4">
           <UserAvatar username={post.user?.username} size="md" />

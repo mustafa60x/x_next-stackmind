@@ -16,6 +16,9 @@ export function generateToken(user: { id: string; username: string }) {
 
 export async function verifyToken(token: string): Promise<DecodedToken | null> {
   try {
+    if (token === '' || !token || token === 'undefined' || token === null) {
+      return null;
+    }
     const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
     const { payload } = await jwtVerify<DecodedToken>(token, secret);
     return payload;
