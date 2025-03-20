@@ -15,10 +15,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const { isDarkMode, toggleDarkMode } = useThemeStore();
 
   useEffect(() => {
-    toggleDarkMode();
-  }, []);
-
-  useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
