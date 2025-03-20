@@ -87,8 +87,8 @@ export const CommentSection = ({
                 </p>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {comment.createdAt &&
-                  format(new Date(comment.createdAt), "dd MMMM yyyy HH:mm", {
+                {comment.created_at &&
+                  format(new Date(comment.created_at), "dd MMMM yyyy HH:mm", {
                     locale: tr,
                   })}
               </p>
