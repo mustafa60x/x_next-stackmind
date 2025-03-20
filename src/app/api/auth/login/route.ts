@@ -5,7 +5,7 @@ import { generateToken } from "@/lib/jwt";
 import { validateCsrfToken, clearCsrfToken } from "@/lib/csrf";
 import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { cookies } from 'next/headers'
+import { cookies } from "next/headers";
 
 export async function POST(request: NextRequest) {
   const { username, password, csrfToken } = await request.json();
@@ -57,25 +57,6 @@ export async function POST(request: NextRequest) {
     { token, user: { id: user.id, username } },
     { status: 200 }
   );
-
-  // Auth token'ı cookie olarak ayarla
-  /* response.cookies.set("access_token", token, {
-    path: "/",
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 7 * 24 * 60 * 60, // 7 gün
-  }); */
-
-  /* const cookieStore = await cookies();
-  cookieStore.set("access_token", token, {
-    path: "/",
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 7 * 24 * 60 * 60, // 7 gün
-  }); */
-
-  // Temporary user ID'yi temizle
-  // (await cookies()).delete('tempUserId')
 
   return response;
 }

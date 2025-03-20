@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useAuthStore } from '@/stores';
-import { UserAvatar } from '@/modules/user/components/UserAvatar';
+import { useAuthStore } from "@/stores";
+import { UserAvatar } from "@/modules/user/components/UserAvatar";
 
 interface DashboardHeaderProps {
   postCount?: number;
@@ -24,7 +24,7 @@ export const DashboardHeader = ({ postCount = 0 }: DashboardHeaderProps) => {
             </p>
           </div>
         </div>
-        
+
         <button
           onClick={logout}
           className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"

@@ -1,17 +1,19 @@
-'use client';
+"use client";
 
 interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
 }
 
 const sizeClasses = {
-  sm: 'h-6 w-6 border-2',
-  md: 'h-8 w-8 border-2',
-  lg: 'h-12 w-12 border-[3px]'
+  sm: "h-6 w-6 border-2",
+  md: "h-8 w-8 border-2",
+  lg: "h-12 w-12 border-[3px]",
 };
 
-export const LoadingSpinner = ({ size = 'md' }: LoadingSpinnerProps) => {
+export const LoadingSpinner = ({ size = "md" }: LoadingSpinnerProps) => {
   return (
-    <div className={`animate-spin rounded-full border-t-blue-500 border-b-blue-500 border-l-transparent border-r-transparent ${sizeClasses[size]}`} />
+    <div
+      className={`animate-spin rounded-full border-t-blue-500 border-b-blue-500 border-l-transparent border-r-transparent ${sizeClasses[size]}`}
+    />
   );
 };

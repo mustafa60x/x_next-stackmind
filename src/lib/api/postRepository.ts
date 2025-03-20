@@ -1,11 +1,11 @@
-import { BaseRepository } from './baseRepository';
+import { BaseRepository } from "./baseRepository";
 
 export class PostRepository extends BaseRepository {
-  private readonly RESOURCE = '/posts';
+  private readonly RESOURCE = "/posts";
 
   async createPost(title: string, content: string) {
     return this.fetch(`${this.RESOURCE}/create`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ title, content }),
     });
   }
@@ -20,7 +20,7 @@ export class PostRepository extends BaseRepository {
 
   async createComment(postId: string, content: string) {
     return this.fetch(`${this.RESOURCE}/create`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ content, postId }),
     });
   }

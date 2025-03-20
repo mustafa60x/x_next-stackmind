@@ -13,11 +13,10 @@ export async function POST(req: Request) {
     }
 
     const { data: existingUser, error: existingUserError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('username', username)
+      .from("users")
+      .select("id")
+      .eq("username", username)
       .maybeSingle();
-
 
     if (existingUser || existingUserError) {
       return NextResponse.json(
@@ -29,7 +28,7 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const { data, error } = await supabase
-      .from('users')
+      .from("users")
       .insert([
         {
           username,

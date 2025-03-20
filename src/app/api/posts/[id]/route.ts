@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { NextResponse } from "next/server";
+import { supabase } from "@/lib/supabase";
 
 export async function GET(
   request: Request,
@@ -8,8 +8,9 @@ export async function GET(
   try {
     const { id } = await Promise.resolve(params);
     const { data: post, error } = await supabase
-      .from('posts')
-      .select(`
+      .from("posts")
+      .select(
+        `
         *,
         user:users (
           username,
@@ -22,23 +23,18 @@ export async function GET(
             id
           )
         )
-      `)
-      .eq('id', Number(id))
+      `
+      )
+      .eq("id", Number(id))
       .single();
 
     if (error) {
-      return NextResponse.json(
-        { message: 'Post bulunamadı' },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: "Post bulunamadı" }, { status: 404 });
     }
 
     return NextResponse.json(post);
   } catch (error) {
-    console.error('Error fetching post:', error);
-    return NextResponse.json(
-      { message: 'Bir hata oluştu' },
-      { status: 500 }
-    );
+    console.error("Error fetching post:", error);
+    return NextResponse.json({ message: "Bir hata oluştu" }, { status: 500 });
   }
 }

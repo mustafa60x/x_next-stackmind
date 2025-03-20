@@ -1,8 +1,8 @@
-import { User } from '@/modules/user/types/userTypes';
-import { BaseRepository } from './baseRepository';
+import { User } from "@/modules/user/types/userTypes";
+import { BaseRepository } from "./baseRepository";
 
 export class UserRepository extends BaseRepository {
-  private readonly RESOURCE = '/users';
+  private readonly RESOURCE = "/users";
 
   async fetchUser(userId: string): Promise<User> {
     return await this.fetch<User>(`${this.RESOURCE}/${userId}`, {

@@ -1,18 +1,16 @@
-'use client';
-import ThemeToggle from '../components/ThemeToggle';
+"use client";
+import ThemeToggle from "../components/ThemeToggle";
 import { useThemeStore } from "../stores";
 import { useEffect } from "react";
 
 export default function Home() {
-  /* const dataFetch = await fetch("https://jsonplaceholder.typicode.com/posts");
-  const data = await dataFetch.json() as { title: string }[]; */
   const { isDarkMode } = useThemeStore();
 
   useEffect(() => {
     if (isDarkMode) {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   }, [isDarkMode]);
 
