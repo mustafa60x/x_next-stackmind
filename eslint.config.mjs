@@ -14,14 +14,25 @@ const eslintConfig = [
   {
     files: ["**/*.ts", "**/*.tsx"],
     rules: {
-      "@typescript-eslint/no-explicit-any": "off",      // any tipini kullanmaya izin ver
-      "@typescript-eslint/explicit-module-boundary-types": "off",  // export edilen fonksiyonlarda tip belirtmeyi zorunlu tutma
-      "@typescript-eslint/no-unused-vars": ["warn", {  // kullanılmayan değişkenleri uyarı olarak göster
-        "argsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_",
-      }],
-      "no-console": "warn",  // console.log kullanımını uyarı olarak göster
-      "prefer-const": "warn",  // let yerine const kullanılabilecek yerleri uyarı olarak göster
+      "@typescript-eslint/no-namespace": [
+        "error",
+        {
+          allowDeclarations: true, // `declare namespace` kullanımı serbest
+          allowDefinitionFiles: true, // `.d.ts` dosyalarında namespace serbest
+        },
+      ],
+      "@typescript-eslint/no-explicit-any": "off", // any tipini kullanmaya izin ver
+      "@typescript-eslint/explicit-module-boundary-types": "off", // export edilen fonksiyonlarda tip belirtmeyi zorunlu tutma
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          // kullanılmayan değişkenleri uyarı olarak göster
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+      "no-console": "warn", // console.log kullanımını uyarı olarak göster
+      "prefer-const": "warn", // let yerine const kullanılabilecek yerleri uyarı olarak göster
     },
   },
 ];

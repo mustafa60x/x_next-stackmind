@@ -1,4 +1,4 @@
-import { render, renderHook } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 import { AuthProvider, useAuth } from '../context/auth-context'
 
 // Mock next/navigation
