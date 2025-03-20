@@ -10,8 +10,8 @@ export class PostRepository extends BaseRepository {
     });
   }
 
-  async getPosts() {
-    return this.fetch(`${this.RESOURCE}`);
+  async getPosts(_options?: RequestInit) {
+    return this.fetch(`${this.RESOURCE}`, _options);
   }
 
   async getPost(id: string) {
