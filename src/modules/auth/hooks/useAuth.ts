@@ -6,6 +6,7 @@ import { User } from "@/types";
 import { authRepository } from "@/lib/api";
 import toast from "react-hot-toast";
 import { useAuthStore } from "@/stores";
+import analytics from "@/lib/analytics";
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -16,6 +17,9 @@ export const useAuth = () => {
   const { login: storeLogin } = useAuthStore();
 
   useEffect(() => {
+    analytics.log("Auth page rendered");
+    analytics.trackEvent("auth_view", { user: "anonymous" });
+
     // CSRF token’ı server’dan al
     getCsrfToken()
       .then((csrfToken) => setCsrfToken(csrfToken))
@@ -25,6 +29,7 @@ export const useAuth = () => {
   const checkAuth = async () => {
     try {
       const userData = await authRepository.getProfile();
+      analytics.trackEvent("auth_check", { user: userData.username });
     } catch (error) {
       router.push("/login");
     } finally {
@@ -50,9 +55,10 @@ export const useAuth = () => {
       await storeLogin(token, userData);
       toast.success("Başarıyla giriş yapıldı!", { id: loadingToast });
       router.push("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       toast.error("Giriş başarısız!", { id: loadingToast });
       setError("Kullanıcı adı veya şifre hatalı!");
+      analytics.error(error, { user: username });
     }
   };
 
