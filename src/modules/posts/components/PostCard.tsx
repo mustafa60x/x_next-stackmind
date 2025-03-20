@@ -1,12 +1,29 @@
 'use client';
 
 import { Post } from '@/types';
-import { format } from 'date-fns';
-import { tr } from 'date-fns/locale';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { CommentSection } from './CommentSection';
-import { UserAvatar } from '@/modules/user/components/UserAvatar';
 import { useEffect, useRef, useState } from 'react';
+
+const DynamicCommentSection = dynamic(
+  () => import('./CommentSection').then(mod => ({ default: mod.CommentSection })),
+  {
+    loading: () => <div className="animate-pulse h-32 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+  }
+);
+
+const DynamicUserAvatar = dynamic(
+  () => import('@/modules/user/components/UserAvatar').then(mod => ({ default: mod.UserAvatar })),
+  {
+    loading: () => <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
+  }
+);
+
+const formatDate = async (date: Date) => {
+  const { format } = await import('date-fns');
+  const { tr } = await import('date-fns/locale');
+  return format(date, 'dd MMMM yyyy HH:mm', { locale: tr });
+};
 
 interface PostCardProps {
   post: Post;
@@ -16,6 +33,7 @@ interface PostCardProps {
 
 export const PostCard = ({ post, showFullContent = false, onCommentSubmit }: PostCardProps) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [formattedDate, setFormattedDate] = useState<string>('');
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,6 +61,12 @@ export const PostCard = ({ post, showFullContent = false, onCommentSubmit }: Pos
     };
   }, []);
 
+  useEffect(() => {
+    if (post.created_at) {
+      formatDate(new Date(post.created_at)).then(date => setFormattedDate(date));
+    }
+  }, [post.created_at]);
+
   return (
     <div 
       ref={cardRef}
@@ -54,11 +78,11 @@ export const PostCard = ({ post, showFullContent = false, onCommentSubmit }: Pos
     >
       <div className="p-6">
         <div className="flex items-center space-x-3 mb-4">
-          <UserAvatar username={post.user?.username} size="md" />
+          <DynamicUserAvatar username={post.user?.username} size="md" />
           <div>
             <p className="text-sm font-medium text-gray-900 dark:text-white">{post.user?.username}</p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              {post.created_at && format(new Date(post.created_at), 'dd MMMM yyyy HH:mm', { locale: tr })}
+              {formattedDate}
             </p>
           </div>
         </div>
@@ -74,7 +98,7 @@ export const PostCard = ({ post, showFullContent = false, onCommentSubmit }: Pos
           {post.content}
         </p>
 
-        <CommentSection 
+        <DynamicCommentSection 
           comments={post.comments} 
           postId={post.id} 
           onCommentSubmit={onCommentSubmit}

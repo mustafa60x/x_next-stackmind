@@ -1,8 +1,21 @@
 import { Suspense } from 'react';
 import { Post } from '@/types';
-import { PostCard } from '@/modules/posts/components/PostCard';
 import { postRepository } from '@/lib/api';
 import PostsLoading from './loading';
+import dynamic from 'next/dynamic';
+
+const DynamicPostCard = dynamic(
+  () => import('@/modules/posts/components/PostCard').then(mod => ({ default: mod.PostCard })),
+  {
+    loading: () => (
+      <div className="animate-pulse space-y-4">
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+      </div>
+    )
+  }
+);
 
 async function getPosts() {
   // 1.5 saniye yapay gecikme
@@ -16,7 +29,7 @@ async function PostsList() {
   return (
     <div className="space-y-6">
       {posts.map((post: Post) => (
-        <PostCard key={post.id} post={post} />
+        <DynamicPostCard key={post.id} post={post} />
       ))}
     </div>
   );
