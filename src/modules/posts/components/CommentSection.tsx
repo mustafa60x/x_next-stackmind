@@ -14,7 +14,7 @@ interface CommentSectionProps {
   postId: string;
   onCommentSubmit?: (postId: string, comment: string) => Promise<void>;
   expanded?: boolean;
-  isLoading?: boolean;
+  // isLoading?: boolean;
 }
 
 export const CommentSection = ({
@@ -22,7 +22,7 @@ export const CommentSection = ({
   postId,
   onCommentSubmit,
   expanded = false,
-  isLoading = false,
+  // isLoading = false,
 }: CommentSectionProps) => {
   const [newComment, setNewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);

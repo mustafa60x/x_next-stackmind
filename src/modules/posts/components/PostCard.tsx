@@ -49,6 +49,8 @@ export const PostCard = ({
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const cardElement = cardRef.current;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -62,13 +64,13 @@ export const PostCard = ({
       }
     );
 
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
+    if (cardElement) {
+      observer.observe(cardElement);
     }
 
     return () => {
-      if (cardRef.current) {
-        observer.unobserve(cardRef.current);
+      if (cardElement) {
+        observer.unobserve(cardElement);
       }
     };
   }, []);

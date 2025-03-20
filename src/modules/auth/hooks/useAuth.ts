@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { User } from "@/types";
 import { authRepository } from "@/lib/api";
 import toast from "react-hot-toast";
 import { useAuthStore } from "@/stores";
@@ -23,14 +22,14 @@ export const useAuth = () => {
     // CSRF token’ı server’dan al
     getCsrfToken()
       .then((csrfToken) => setCsrfToken(csrfToken))
-      .catch((err) => console.error("CSRF token alınamadı:", err));
+      .catch();
   }, []);
 
   const checkAuth = async () => {
     try {
       const userData = await authRepository.getProfile();
       analytics.trackEvent("auth_check", { user: userData.username });
-    } catch (error) {
+    } catch {
       router.push("/login");
     } finally {
       setIsLoading(false);
@@ -73,7 +72,7 @@ export const useAuth = () => {
       await storeLogin(token, userData);
       toast.success("Kayıt başarıyla tamamlandı!", { id: loadingToast });
       router.push("/dashboard");
-    } catch (error) {
+    } catch {
       toast.error("Kayıt başarısız oldu!", { id: loadingToast });
       setError("Bu kullanıcı adı zaten kullanılıyor olabilir.");
     }
@@ -85,7 +84,7 @@ export const useAuth = () => {
       await fetch("/api/auth/logout", { method: "POST" });
       router.push("/login");
       toast.success("Çıkış yapıldı");
-    } catch (error) {
+    } catch {
       toast.error("Çıkış yapılamadı");
     }
   };

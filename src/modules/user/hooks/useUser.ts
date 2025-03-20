@@ -2,7 +2,7 @@ import { useUserStore } from '../store/userStore';
 import { useCallback } from 'react';
 import { User } from '../types/userTypes';
 import { userRepository } from '@/lib/api/userRepository';
-
+import toast from 'react-hot-toast';
 
 export const useUser = () => {
   const currentUser = useUserStore((state) => state.currentUser);
@@ -12,8 +12,8 @@ export const useUser = () => {
     try {
       const user = await userRepository.fetchUser(userId) as User;
       setCurrentUser(user);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      toast.error("Kullanıcı bilgileri yüklenirken bir hata oluştu");
     }
   }, [setCurrentUser]);
 

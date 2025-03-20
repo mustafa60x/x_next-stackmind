@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       { token, user: { id: data.id, username } },
       { status: 201 }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: "Bir hata oluştu" }, { status: 500 });
   }
 }

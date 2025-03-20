@@ -22,7 +22,7 @@ export async function verifyToken(token: string): Promise<DecodedToken | null> {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
     const { payload } = await jwtVerify<DecodedToken>(token, secret);
     return payload;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

@@ -1,11 +1,11 @@
 // app/api/profile/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { DecodedToken } from "@/types";
 import { supabase } from "@/lib/supabase";
 import { verifyToken } from "@/lib/jwt";
 import { cookies } from "next/headers";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const accessToken = (await cookies()).get("access_token")?.value;
   if (!accessToken) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

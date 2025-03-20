@@ -1,10 +1,10 @@
 // app/api/csrf/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { generateCsrfToken } from "@/lib/csrf";
 import crypto from "crypto";
 import { cookies } from "next/headers";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   // Cookie üzerinden tempUserId alınır; yoksa rastgele oluşturulur
   const tempUserId =
     (await cookies()).get("tempUserId")?.value ||

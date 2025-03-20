@@ -33,7 +33,7 @@ export async function GET(
     }
 
     return NextResponse.json(post);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: "Bir hata oluştu" }, { status: 500 });
   }
 }

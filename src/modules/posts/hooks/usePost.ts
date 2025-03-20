@@ -19,7 +19,7 @@ export const usePost = () => {
       setIsLoading(true);
       const data = (await postRepository.getPosts()) as Post[];
       setPosts(data);
-    } catch (error) {
+    } catch {
       toast.error("Gönderiler yüklenirken bir hata oluştu");
     } finally {
       setIsLoading(false);
@@ -44,7 +44,7 @@ export const usePost = () => {
       setIsLoading(true);
       const data = (await postRepository.getPost(postId)) as Post;
       setPost(data);
-    } catch (error) {
+    } catch {
       toast.error("Gönderi yüklenirken bir hata oluştu");
     } finally {
       setIsLoading(false);
@@ -58,7 +58,7 @@ export const usePost = () => {
       if (post) {
         setPost((prev) => (prev ? { ...prev, comments: data.comments } : data));
       }
-    } catch (error) {
+    } catch {
       toast.error("Yorumlar yüklenirken bir hata oluştu");
     } finally {
       setIsLoadingComments(false);
@@ -96,7 +96,7 @@ export const usePost = () => {
         throw error;
       }
     },
-    [fetchComments, setPost]
+    [fetchComments, setPost, user]
   );
 
 
@@ -104,6 +104,7 @@ export const usePost = () => {
     posts,
     post,
     isLoading,
+    isLoadingComments,
     fetchPost,
     fetchPosts,
     createPost,

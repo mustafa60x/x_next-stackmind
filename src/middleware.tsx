@@ -62,7 +62,7 @@ async function getDecodedToken(token: string | undefined) {
       return null;
     }
     return decoded;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

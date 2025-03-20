@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { LoadingSpinner } from "@/modules/common/components/LoadingSpinner";
 import Link from "next/link";
@@ -30,7 +30,7 @@ export const AuthForm = ({ mode }: AuthFormProps) => {
       } else {
         await register(username, password);
       }
-    } catch (error) {
+    } catch {
     } finally {
       setIsSubmitting(false);
     }

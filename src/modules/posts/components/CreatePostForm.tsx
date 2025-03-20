@@ -27,7 +27,7 @@ export const CreatePostForm = ({
       await onSubmit(title, content);
       setTitle("");
       setContent("");
-    } catch (error) {
+    } catch {
       // Error is handled by the parent component
     }
   };
