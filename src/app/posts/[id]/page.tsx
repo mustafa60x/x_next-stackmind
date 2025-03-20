@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { usePost } from '@/modules/posts/hooks/usePost';
+import { useComment } from '@/modules/posts/hooks/useComment';
 import { PostCard } from '@/modules/posts/components/PostCard';
 import { PageContainer } from '@/modules/layout/components/PageContainer';
 import { LoadingSpinner } from '@/modules/common/components/LoadingSpinner';
@@ -10,10 +11,10 @@ import { useEffect } from 'react';
 
 export default function PostDetail() {
   const { id } = useParams();
-  const { post, isLoading, createComment, fetchPost } = usePost(id as string);
+  const { post, isLoading, fetchPost, createComment } = usePost();
 
   useEffect(() => {
-    fetchPost();
+    fetchPost(id as string);
   }, [id]);
 
   if (isLoading || !post) {
@@ -53,7 +54,7 @@ export default function PostDetail() {
           post={post}
           showFullContent
           onCommentSubmit={async (_, comment) => {
-            await createComment(comment);
+            await createComment(post.id, comment);
           }}
         />
       </PageContainer>

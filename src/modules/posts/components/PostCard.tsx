@@ -22,7 +22,7 @@ export const PostCard = ({ post, showFullContent = false, onCommentSubmit }: Pos
           <div>
             <p className="text-sm font-medium text-gray-900 dark:text-white">{post.user?.username}</p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              {post.createdAt && format(new Date(post.createdAt), 'dd MMMM yyyy HH:mm', { locale: tr })}
+              {post.created_at && format(new Date(post.created_at), 'dd MMMM yyyy HH:mm', { locale: tr })}
             </p>
           </div>
         </div>

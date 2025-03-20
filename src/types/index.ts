@@ -15,7 +15,7 @@ export interface Post {
   title: string;
   content: string;
   user: User;
-  createdAt: string;
+  created_at: string;
   comments?: Comment[];
 }
 
@@ -23,7 +23,7 @@ export interface Comment {
   id: string;
   content: string;
   user: User;
-  postId: string;
-  score: number;
-  createdAt: string;
+  user_id: string;
+  post_id: string;
+  created_at: string;
 }

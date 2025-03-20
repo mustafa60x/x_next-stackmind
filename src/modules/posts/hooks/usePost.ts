@@ -2,15 +2,17 @@
 
 import { Post, Comment } from "@/types";
 import { useState, useCallback } from "react";
-import { postRepository, commentRepository } from "@/lib/api";
+import { commentRepository, postRepository } from "@/lib/api";
 import toast from "react-hot-toast";
+import { useAuthStore } from "@/stores";
 
-export const usePost = (postId: string) => {
+export const usePost = () => {
   const [posts, setPosts] = useState<Post[]>([]);
-
   const [post, setPost] = useState<Post | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  
   const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuthStore();
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -28,7 +30,8 @@ export const usePost = (postId: string) => {
   const createPost = useCallback(async (title: string, content: string) => {
     try {
       const newPost = (await postRepository.createPost(title, content)) as Post;
-      setPosts((prev) => [newPost, ...prev]);
+      const postWithUser = { ...newPost, user };
+      setPosts((prev) => [postWithUser, ...prev] as Post[]);
       toast.success("Gönderi başarıyla oluşturuldu");
       return newPost;
     } catch (error) {
@@ -38,7 +41,7 @@ export const usePost = (postId: string) => {
     }
   }, []);
 
-  const fetchPost = useCallback(async () => {
+  const fetchPost = useCallback(async (postId: string) => {
     try {
       setIsLoading(true);
       const data = (await postRepository.getPost(postId)) as Post;
@@ -49,9 +52,9 @@ export const usePost = (postId: string) => {
     } finally {
       setIsLoading(false);
     }
-  }, [postId]);
+  }, []);
 
-  const fetchComments = useCallback(async () => {
+  const fetchComments = useCallback(async (postId: string) => {
     try {
       setIsLoadingComments(true);
       const data = (await postRepository.getPost(postId)) as Post;
@@ -64,50 +67,52 @@ export const usePost = (postId: string) => {
     } finally {
       setIsLoadingComments(false);
     }
-  }, [postId, post]);
+  }, []);
 
   const createComment = useCallback(
-    async (content: string) => {
+    async (postId: string, content: string) => {
       try {
         const newComment = (await commentRepository.createComment(
           postId,
           content
         )) as Comment;
 
+        const commentWithUser = { ...newComment, user };
+
         // Optimistic update
-        setPost((prev) => {
+        setPost((prev: Post | null) => {
           if (!prev) return prev;
           return {
             ...prev,
-            comments: [...(prev.comments || []), newComment],
-          };
+            comments: [...(prev.comments || []), commentWithUser],
+          } as Post;
         });
 
         toast.success("Yorum başarıyla eklendi");
 
         // Background refresh
-        fetchComments();
+        fetchComments(postId);
 
         return newComment;
       } catch (error) {
         console.error("Error creating comment:", error);
         toast.error("Yorum eklenirken bir hata oluştu");
-        fetchComments(); // Refresh on error to ensure consistency
+        fetchComments(postId); // Refresh on error to ensure consistency
         throw error;
       }
     },
-    [postId, fetchComments]
+    [fetchComments, setPost]
   );
+
 
   return {
     posts,
     post,
     isLoading,
-    isLoadingComments,
     fetchPost,
-    fetchComments,
-    createComment,
     fetchPosts,
     createPost,
+    fetchComments,
+    createComment
   };
 };
