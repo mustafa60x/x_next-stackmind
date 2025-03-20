@@ -1,19 +1,21 @@
+import { useUserStore } from '../store/userStore';
 import { useCallback } from 'react';
 import { User } from '../types/userTypes';
 import { userRepository } from '@/lib/api/userRepository';
-import { useAuthStore } from '@/stores';
+
 
 export const useUser = () => {
-  const { user, setUser } = useAuthStore();
+  const currentUser = useUserStore((state) => state.currentUser);
+  const setCurrentUser = useUserStore((state) => state.setCurrentUser);
 
   const loadUser = useCallback(async (userId: string) => {
     try {
       const user = await userRepository.fetchUser(userId) as User;
-      setUser(user);
+      setCurrentUser(user);
     } catch (error) {
       console.error(error);
     }
-  }, [setUser]);
+  }, [setCurrentUser]);
 
-  return { user, loadUser };
+  return { currentUser, loadUser };
 };

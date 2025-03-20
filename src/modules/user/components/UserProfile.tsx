@@ -14,7 +14,7 @@ const UserProfile: React.FC = () => {
 
   return (
     <div>
-      <h1>{currentUser.name}</h1>
+      <h1>{currentUser.username}</h1>
       <p>{currentUser.email}</p>
     </div>
   );
