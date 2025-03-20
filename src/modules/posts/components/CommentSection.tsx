@@ -68,6 +68,14 @@ export const CommentSection = ({
         </form>
       )}
 
+      {expanded && comments?.length === 0 && (
+        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 rounded-lg p-4 mb-4">
+          <p className="text-sm text-blue-700 dark:text-blue-300">
+            İlk yorumu yapan sen ol! Düşüncelerini paylaşarak tartışmayı başlat ve katkıda bulun. 🌟
+          </p>
+        </div>
+      )}
+
       <div className={clsx("space-y-4 relative", isSubmitting && "opacity-50")}>
         {isSubmitting && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-gray-800/50 z-10 backdrop-blur-sm">
