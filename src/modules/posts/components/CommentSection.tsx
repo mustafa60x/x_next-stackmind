@@ -7,6 +7,7 @@ import { useState } from "react";
 import { UserAvatar } from "@/modules/user/components/UserAvatar";
 import clsx from "clsx";
 import Link from "next/link";
+import { LoadingSpinner } from "@/modules/common/components/LoadingSpinner";
 
 interface CommentSectionProps {
   comments?: Comment[];
@@ -67,10 +68,10 @@ export const CommentSection = ({
         </form>
       )}
 
-      <div className={clsx("space-y-4 relative", isLoading && "opacity-50")}>
-        {isLoading && (
+      <div className={clsx("space-y-4 relative", isSubmitting && "opacity-50")}>
+        {isSubmitting && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-gray-800/50 z-10 backdrop-blur-sm">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            <LoadingSpinner size="md" />
           </div>
         )}
 
