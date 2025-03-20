@@ -20,7 +20,6 @@ export const usePost = () => {
       const data = (await postRepository.getPosts()) as Post[];
       setPosts(data);
     } catch (error) {
-      console.error("Error fetching posts:", error);
       toast.error("Gönderiler yüklenirken bir hata oluştu");
     } finally {
       setIsLoading(false);
@@ -35,7 +34,6 @@ export const usePost = () => {
       toast.success("Gönderi başarıyla oluşturuldu");
       return newPost;
     } catch (error) {
-      console.error("Error creating post:", error);
       toast.error("Gönderi oluşturulurken bir hata oluştu");
       throw error;
     }
@@ -47,7 +45,6 @@ export const usePost = () => {
       const data = (await postRepository.getPost(postId)) as Post;
       setPost(data);
     } catch (error) {
-      console.error("Error fetching post:", error);
       toast.error("Gönderi yüklenirken bir hata oluştu");
     } finally {
       setIsLoading(false);
@@ -62,7 +59,6 @@ export const usePost = () => {
         setPost((prev) => (prev ? { ...prev, comments: data.comments } : data));
       }
     } catch (error) {
-      console.error("Error fetching comments:", error);
       toast.error("Yorumlar yüklenirken bir hata oluştu");
     } finally {
       setIsLoadingComments(false);
@@ -95,7 +91,6 @@ export const usePost = () => {
 
         return newComment;
       } catch (error) {
-        console.error("Error creating comment:", error);
         toast.error("Yorum eklenirken bir hata oluştu");
         fetchComments(postId); // Refresh on error to ensure consistency
         throw error;

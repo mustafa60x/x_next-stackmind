@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
   if (!user || error) {
     return NextResponse.json(
-      { message: "Invalid credentials" },
+      { message: "Kullanıcı adı veya şifre hatalı!" },
       { status: 401 }
     );
   }
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
   const isValid = await bcrypt.compare(password, user.password);
   if (!isValid) {
     return NextResponse.json(
-      { message: "Invalid credentials" },
+      { message: "Kullanıcı adı veya şifre hatalı!" },
       { status: 401 }
     );
   }

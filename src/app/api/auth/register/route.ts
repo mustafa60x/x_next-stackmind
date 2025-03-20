@@ -49,7 +49,6 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error(error);
     return NextResponse.json({ message: "Bir hata oluştu" }, { status: 500 });
   }
 }

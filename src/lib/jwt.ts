@@ -23,7 +23,6 @@ export async function verifyToken(token: string): Promise<DecodedToken | null> {
     const { payload } = await jwtVerify<DecodedToken>(token, secret);
     return payload;
   } catch (error) {
-    console.error("Token doğrulama hatası:", error);
     return null;
   }
 }

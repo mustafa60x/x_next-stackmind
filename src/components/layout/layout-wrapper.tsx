@@ -29,7 +29,7 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
     if (!isAuthPage && !user) {
       loadUser();
     }
-  }, [isAuthPage, setUser, user]);
+  }, [isAuthPage]);
 
   if (isLoading && !isAuthPage) {
     return (

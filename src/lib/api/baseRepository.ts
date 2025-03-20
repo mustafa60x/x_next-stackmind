@@ -19,8 +19,10 @@ export class BaseRepository {
       headers,
     });
 
+    const data = await response.json();
+
     if (response.ok) {
-      return response.json();
+      return data;
     }
 
     // Error handling
@@ -28,10 +30,15 @@ export class BaseRepository {
       // Unauthorized - Token'ı temizle
       Cookies.remove("access_token");
       // Oturum açma sayfasına yönlendir
-      window.location.href = "/login";
+      // if pathname is not login
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+
+      throw new Error(data.message || "Oturum açmanız gerekiyor");
     }
     // 403
-    if (response.status === 403) throw new Error("Forbidden");
+    if (response.status === 403) throw new Error(data.message || "İzin Yetersiz");
 
     return response.json();
   }

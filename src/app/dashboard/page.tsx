@@ -27,7 +27,6 @@ export default function Dashboard() {
       setIsSubmitting(true);
       await createPost(title, content);
     } catch (error) {
-      console.error("Error creating post:", error);
       toast.error("Gönderi oluşturulurken bir hata oluştu");
     } finally {
       setIsSubmitting(false);
@@ -46,7 +45,6 @@ export default function Dashboard() {
       await fetchPosts(); // Refresh posts to get new comments
       toast.success("Yorum başarıyla eklendi");
     } catch (error) {
-      console.error("Error creating comment:", error);
       toast.error("Yorum eklenirken bir hata oluştu");
     } finally {
       setIsSubmitting(false);
